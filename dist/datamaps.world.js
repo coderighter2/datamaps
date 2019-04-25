@@ -455,14 +455,13 @@
               return path(greatArc(datum))
             }
             var sharpness = val(datum.arcSharpness, options.arcSharpness, datum);
-            var dest = Math.sqrt((originXY[0] - destXY[0]) * (originXY[0] - destXY[0]) + (originXY[1] - destXY[1]) * (originXY[1] - destXY[0]));
-            if (dest < 1) {
+            var distance = Math.sqrt((originXY[0] - destXY[0]) * (originXY[0] - destXY[0]) + (originXY[1] - destXY[1]) * (originXY[1] - destXY[1]));
+            if (distance < 1) {
                 destXY[0] = originXY[0] + 1
                 destXY[1] = originXY[1] + 1;
             }
-
-            if (dest < 10) {
-                return "M" + originXY[0] + "," + originXY[1] + "A" + (sharpness * 30) + "," + (sharpness * 30) + " 0 1,1 " + (originXY[0] + 1) + "," + (originXY[1] + 1);
+            if (distance < 10) {
+                return "M" + originXY[0] + "," + originXY[1] + "A" + (sharpness * 30) + "," + (sharpness * 30) + " 0 1,1 " + destXY[0] + "," + destXY[1]    ;
             } else {
                 return "M" + originXY[0] + ',' + originXY[1] + "S" + (midXY[0] + (50 * sharpness)) + "," + (midXY[1] - (75 * sharpness)) + "," + destXY[0] + "," + destXY[1];
             }
@@ -512,6 +511,9 @@
     this.svg.selectAll(".datamaps-subunit")
       .attr("data-foo", function(d) {
         var center = self.path.centroid(d);
+        if ( d.properties.iso === 'USA' ) {
+            center = self.projection([-98.58333, 39.83333])
+        }
         var xOffset = 7.5, yOffset = 5;
 
         if ( ["FL", "KY", "MI"].indexOf(d.id) > -1 ) xOffset = -2.5;
