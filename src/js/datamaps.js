@@ -455,7 +455,17 @@
               return path(greatArc(datum))
             }
             var sharpness = val(datum.arcSharpness, options.arcSharpness, datum);
-            return "M" + originXY[0] + ',' + originXY[1] + "S" + (midXY[0] + (50 * sharpness)) + "," + (midXY[1] - (75 * sharpness)) + "," + destXY[0] + "," + destXY[1];
+            var dest = Math.sqrt((originXY[0] - destXY[0]) * (originXY[0] - destXY[0]) + (originXY[1] - destXY[1]) * (originXY[1] - destXY[0]));
+            if (dest < 1) {
+                destXY[0] = originXY[0] + 1
+                destXY[1] = originXY[1] + 1;
+            }
+
+            if (dest < 10) {
+                return "M" + originXY[0] + "," + originXY[1] + "A" + (sharpness * 30) + "," + (sharpness * 30) + " 0 1,1 " + (originXY[0] + 1) + "," + (originXY[1] + 1);
+            } else {
+                return "M" + originXY[0] + ',' + originXY[1] + "S" + (midXY[0] + (50 * sharpness)) + "," + (midXY[1] - (75 * sharpness)) + "," + destXY[0] + "," + destXY[1];
+            }
         })
         .attr('data-info', function(datum) {
           return JSON.stringify(datum);
